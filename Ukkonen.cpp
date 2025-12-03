@@ -393,7 +393,7 @@ int main() {
     cout << "\n   begin: " << st_base.contains("begin");
 
     cout << "\nMétodo findAll:";
-    cout << endl << "      ";
+    cout << endl << "      na:";
     for (auto i : st_base.findAll("na")) {
         cout << i << " ";
     }
