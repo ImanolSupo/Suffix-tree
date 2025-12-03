@@ -63,7 +63,7 @@ class SuffixTree {
         Node * v = root;
         int i = 0;
 
-        while(i < P.size()){
+        while(i < (int)P.size()){
             auto it = v->next.find(P[i]);
             if(it == v->next.end()){
                 return false;
@@ -74,7 +74,7 @@ class SuffixTree {
             int edgeLen = nxt->len();
             int j = 0;
 
-            while(j < edgeLen && i < P.size()){
+            while(j < edgeLen && i < (int)P.size()){
                 if(s[nxt->start + j] != P[i]){
                     return false;
                 }
@@ -211,9 +211,9 @@ int main() {
     cout << "texto: " << text << "\n\n";
     st.print();
 
-    cout << "Método Contains: \n";
-    cout << " esta: " << st.contains("esta");
-    cout << " estas: " << st.contains("estas");
+    cout << "\nMétodo Contains:";
+    cout << "\n   esta: " << st.contains("esta");
+    cout << "\n   estas: " << st.contains("estas");
 
     return 0;
 }
