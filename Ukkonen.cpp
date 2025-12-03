@@ -379,6 +379,45 @@ SuffixTree txt_to_suffix_tree(const string &filename, long long limit) {
 
 int main() {
     long long limit = 70000; // limite de caracteres, 4 322 868 caracteres como maximo
+    
+    cout << "------CASO BASE: banana------\n";
+
+    string text = "banana";
+    SuffixTree st(text);
+
+    cout << "texto: " << text << "\n\n";
+    st.print();
+
+    cout << "\nMétodo Contains:";
+    cout << "\n   ana: " << st.contains("ana");
+    cout << "\n   begin: " << st.contains("begin");
+
+    cout << "\nMétodo findAll:";
+    cout << endl << "      ";
+    for (auto i : st.findAll("na")) {
+        cout << i << " ";
+    }
+
+    cout << "\nMétodo getNodeFromPattern:\n";
+    SuffixTree::Node *v = st.getNodeFromPattern("ana");
+
+    if (v) {
+        cout << "   Nodo de 'ana' encontrado.\n";
+        cout << "\nMétodo PathLabel:\n";
+        cout << "   PathLabel del nodo: " << st.pathLabel(v) << endl;
+        cout << "\nMétodo stringDepth:\n";
+        cout << "   stringDepth del nodo: " << st.stringDepth(v) << endl;
+    }
+
+    cout << "\nMétodo toSuffixArray:";
+    cout << endl << "      ";
+    for (auto i : st.toSuffixArray()) {
+        cout << i << " ";
+    }
+
+
+
+    cout << "------CASO EXTENSO: Antiguo Testamento------\n";
     SuffixTree st = txt_to_suffix_tree("Bible.txt", limit);
     cout << "Suffix tree construido \n";
 
