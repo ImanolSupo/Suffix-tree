@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -127,6 +128,114 @@ class SuffixTree {
         }
         DFS(v, indices);
         return indices;
+    }
+    
+    int countAll(string P){
+        return findAll(P).size();
+    }
+
+    Node* findParentRec(Node* cur, Node* target){
+        for(auto &kv : cur->next){
+            if(kv.second == target)
+                return cur;
+
+            Node* res = findParentRec(kv.second, target);
+            if(res) return res;
+        }
+        return nullptr;
+    }
+
+    Node* findParent(Node* target){
+        return findParentRec(root, target);
+    }
+
+    string pathLabel(Node * v){
+        string label = "";
+
+        while(v != root){
+            // obtener la etiqueta de la arista hacia v
+            string edge;
+            for(int i = v->start; i <= *(v->end); i++){
+                edge.push_back(s[i]);
+            }
+
+            label = edge + label;
+
+            v = findParent(v);
+        }
+
+        return label;
+    }
+
+    int stringDepth(Node * v){
+        int depth = 0;
+        while(v != root){
+            // obtener la etiqueta de la arista hacia v
+            string edge;
+            for(int i = v->start; i <= *(v->end); i++){
+                edge.push_back(s[i]);
+            }
+
+            depth += (int)edge.size();
+
+            v = findParent(v);
+        }
+        return depth;
+    }
+
+    Node* getNodeFromPattern(const string& P){
+        Node* v = root;
+        int i = 0;
+
+        while(i < (int)P.size()){
+            auto it = v->next.find(P[i]);
+            if(it == v->next.end())
+                return nullptr;
+
+            Node* nxt = it->second;
+            int edgeLen = nxt->len();
+            int j = 0;
+
+            while(j < edgeLen && i < (int)P.size()){
+                if(s[nxt->start + j] != P[i])
+                    return nullptr;
+                j++;
+                i++;
+            }
+
+            v = nxt;
+        }
+
+        return v;
+    }
+
+
+    void dfsSuffixArray(Node* v, vector<int>& SA) {
+        if (v->next.empty()) {
+            SA.push_back(v->suffixIndex);
+            return;
+        }
+
+        vector<pair<unsigned char, Node*>> children;
+        for (auto& kv : v->next) {
+            children.push_back(kv);
+        }
+
+        sort(children.begin(), children.end(),
+            [](const auto& a, const auto& b) {
+                return a.first < b.first;
+            });
+
+        for (auto& child : children) {
+            dfsSuffixArray(child.second, SA);
+        }
+    }
+
+
+    vector<int> toSuffixArray() {
+        vector<int> SA;
+        dfsSuffixArray(root, SA);
+        return SA;
     }
 
   private:
@@ -276,6 +385,18 @@ int main() {
     cout << "\nMétodo Contains:";
     cout << "\n   And God saw the light, that it was good: " << st.contains("And God saw the light, that it was good");
     cout << "\n   Come, let us make our father drink wine: " << st.contains("Come, let us make our father drink wine");
+
+    cout << "\nMétodo FindAll:";
+    cout << "\n   Eve: ";
+    
+    for(int f : st.findAll("Eve")){
+        cout << f << " ";
+    };
+
+    cout << "\n";
+
+    cout << "\nMétodo CountAll:";
+    cout << "\n   Adam: " << st.countAll("Adam") << "\n";
 
     return 0;
 }
