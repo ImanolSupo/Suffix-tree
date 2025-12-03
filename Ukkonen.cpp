@@ -386,7 +386,7 @@ int main() {
     SuffixTree st_base(text);
 
     cout << "texto: " << text << "\n\n";
-    st.print();
+    st_base.print();
 
     cout << "\nMétodo Contains:";
     cout << "\n   ana: " << st_base.contains("ana");
