@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -117,14 +118,31 @@ class SuffixTree {
     void print() const { printRec(root, "", true); }
 };
 
-int main() {
+SuffixTree txt_to_suffix_tree(const string &filename, long long limit) {
+    ifstream in(filename);
+    if (!in.is_open()) {
+        cerr << "Error: no se pudo abrir el archivo\n";
+        exit(1);
+    }
+    string text;
+    text.assign((istreambuf_iterator<char>(in)), istreambuf_iterator<char>());
+
+    long long n = text.size();
+    string used = (limit < n ? text.substr(0, (size_t)limit) : text);
+
+    if (used.empty() || used.back() != '$')
+        used.push_back('$');
+
     SuffixTree st;
+    st.build(used);
+    return st;
+}
 
-    string s = "esta es la primera prueba del suffix tree";
-    st.build(s);
+int main() {
+    long long limit = 15; // limite de caracteres, 4 322 868 caracteres como maximo
+    SuffixTree st = txt_to_suffix_tree("Bible.txt", limit);
 
-    cout << "texto: " << s << "\n\n";
+    cout << "Suffix tree construido\n";
     st.print();
-
     return 0;
 }
