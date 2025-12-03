@@ -12,6 +12,7 @@ class SuffixTree {
         unordered_map<unsigned char, Node *> next;
         Node *link = nullptr;
         int start = -1;
+        int suffixIndex = -1;
         int *end = nullptr;
         Node(int s, int *e) : start(s), end(e) {}
         int len() const { return *end - start + 1; }
@@ -88,6 +89,45 @@ class SuffixTree {
         return true;
     }
 
+    void DFS(Node * node, vector<int> &indices){
+        if(node->next.empty()){
+            indices.push_back(node->suffixIndex);
+            return;
+        }
+
+        for(auto &child : node->next){
+            DFS(child.second, indices);
+        }
+    }
+
+    vector<int> findAll(string P){
+        vector<int> indices;
+        Node * v = root;
+        int i = 0;
+        
+        while(i < (int)P.size()){
+            auto it = v->next.find(P[i]);
+            if(it == v->next.end()){
+                return {};
+            }
+
+            Node * nxt = it->second;
+            int edgeLen = nxt->len();
+            int j = 0;
+            
+            while(j < edgeLen && i < (int)P.size()){
+                if(s[nxt->start + j] != P[i]){
+                    return {};
+                }
+                j++;
+                i++;
+            }
+            v = nxt;
+        }
+        DFS(v, indices);
+        return indices;
+    }
+
   private:
     Node *newNode(int start, int *endPtr) {
         pool.push_back(make_unique<Node>(start, endPtr));
@@ -123,7 +163,10 @@ class SuffixTree {
 
             auto it = active->next.find(a);
             if (it == active->next.end()) {
-                active->next[a] = newNode(pos, &leafEndVal);
+                Node *leaf = newNode(pos, &leafEndVal);
+                leaf->suffixIndex = pos - rem + 1;
+                active->next[a] = leaf;
+                
                 if (lastInternal != nullptr) {
                     lastInternal->link = active;
                     lastInternal = nullptr;
@@ -154,6 +197,7 @@ class SuffixTree {
                 split->next[(unsigned char)s[nxt->start]] = nxt;
 
                 split->next[c] = newNode(pos, &leafEndVal);
+                split->next[c]->suffixIndex = pos - rem + 1;
 
                 if (lastInternal != nullptr)
                     lastInternal->link = split;
