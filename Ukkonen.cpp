@@ -59,6 +59,35 @@ class SuffixTree {
 
     void print() const { printRec(root, "", true); }
 
+    bool contains(string P){
+        Node * v = root;
+        int i = 0;
+
+        while(i < P.size()){
+            auto it = v->next.find(P[i]);
+            if(it == v->next.end()){
+                return false;
+            }
+
+            Node * nxt = it->second;
+
+            int edgeLen = nxt->len();
+            int j = 0;
+
+            while(j < edgeLen && i < P.size()){
+                if(s[nxt->start + j] != P[i]){
+                    return false;
+                }
+                j++;
+                i++;
+            }
+
+            v = nxt;
+        }
+        
+        return true;
+    }
+
   private:
     Node *newNode(int start, int *endPtr) {
         pool.push_back(make_unique<Node>(start, endPtr));
@@ -181,5 +210,10 @@ int main() {
 
     cout << "texto: " << text << "\n\n";
     st.print();
+
+    cout << "Método Contains: \n";
+    cout << " esta: " << st.contains("esta");
+    cout << " estas: " << st.contains("estas");
+
     return 0;
 }
