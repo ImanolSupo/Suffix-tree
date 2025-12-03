@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -60,23 +61,23 @@ class SuffixTree {
 
     void print() const { printRec(root, "", true); }
 
-    bool contains(string P){
-        Node * v = root;
+    bool contains(string P) {
+        Node *v = root;
         int i = 0;
 
-        while(i < (int)P.size()){
+        while (i < (int)P.size()) {
             auto it = v->next.find(P[i]);
-            if(it == v->next.end()){
+            if (it == v->next.end()) {
                 return false;
             }
 
-            Node * nxt = it->second;
+            Node *nxt = it->second;
 
             int edgeLen = nxt->len();
             int j = 0;
 
-            while(j < edgeLen && i < (int)P.size()){
-                if(s[nxt->start + j] != P[i]){
+            while (j < edgeLen && i < (int)P.size()) {
+                if (s[nxt->start + j] != P[i]) {
                     return false;
                 }
                 j++;
@@ -85,38 +86,38 @@ class SuffixTree {
 
             v = nxt;
         }
-        
+
         return true;
     }
 
-    void DFS(Node * node, vector<int> &indices){
-        if(node->next.empty()){
+    void DFS(Node *node, vector<int> &indices) {
+        if (node->next.empty()) {
             indices.push_back(node->suffixIndex);
             return;
         }
 
-        for(auto &child : node->next){
+        for (auto &child : node->next) {
             DFS(child.second, indices);
         }
     }
 
-    vector<int> findAll(string P){
+    vector<int> findAll(string P) {
         vector<int> indices;
-        Node * v = root;
+        Node *v = root;
         int i = 0;
-        
-        while(i < (int)P.size()){
+
+        while (i < (int)P.size()) {
             auto it = v->next.find(P[i]);
-            if(it == v->next.end()){
+            if (it == v->next.end()) {
                 return {};
             }
 
-            Node * nxt = it->second;
+            Node *nxt = it->second;
             int edgeLen = nxt->len();
             int j = 0;
-            
-            while(j < edgeLen && i < (int)P.size()){
-                if(s[nxt->start + j] != P[i]){
+
+            while (j < edgeLen && i < (int)P.size()) {
+                if (s[nxt->start + j] != P[i]) {
                     return {};
                 }
                 j++;
@@ -166,7 +167,7 @@ class SuffixTree {
                 Node *leaf = newNode(pos, &leafEndVal);
                 leaf->suffixIndex = pos - rem + 1;
                 active->next[a] = leaf;
-                
+
                 if (lastInternal != nullptr) {
                     lastInternal->link = active;
                     lastInternal = nullptr;
@@ -248,16 +249,33 @@ class SuffixTree {
     }
 };
 
-int main() {
-    string text = "esta es la primera prueba del suffix tree";
-    SuffixTree st(text);
+SuffixTree txt_to_suffix_tree(const string &filename, long long limit) {
+    ifstream in(filename);
+    if (!in.is_open()) {
+        cerr << "Error: no se pudo abrir el archivo\n";
+        exit(1);
+    }
 
-    cout << "texto: " << text << "\n\n";
-    st.print();
+    string text;
+    text.assign((istreambuf_iterator<char>(in)), istreambuf_iterator<char>());
+
+    long long n = text.size();
+    string used = (limit < n ? text.substr(0, (size_t)limit) : text);
+
+    if (used.empty() || used.back() != '$')
+        used.push_back('$');
+
+    return SuffixTree(used);
+}
+
+int main() {
+    long long limit = 70000; // limite de caracteres
+    SuffixTree st = txt_to_suffix_tree("Bible.txt", limit);
+    cout << "Suffix tree construido \n";
 
     cout << "\nMétodo Contains:";
-    cout << "\n   esta: " << st.contains("esta");
-    cout << "\n   estas: " << st.contains("estas");
+    cout << "\n   And God saw the light, that it was good: " << st.contains("And God saw the light, that it was good");
+    cout << "\n   Come, let us make our father drink wine: " << st.contains("Come, let us make our father drink wine");
 
     return 0;
 }
