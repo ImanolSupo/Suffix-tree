@@ -423,7 +423,7 @@ int main() {
     cout << "\n   And God saw the light, that it was good: " << st.contains("And God saw the light, that it was good");
     cout << "\n   Come, let us make our father drink wine: " << st.contains("Come, let us make our father drink wine");
 
-    cout << "\nMétodo FindAll:";
+    cout << "\n\nMétodo FindAll:";
     cout << "\n   Eve: ";
     
     for(int f : st.findAll("Eve")){
